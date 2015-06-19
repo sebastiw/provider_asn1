@@ -26,9 +26,19 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-    io:format("Project apps: ~p~n", [rebar_state:project_apps(State)]),
+    lists:foreach(fun process_app/1, rebar_state:project_apps(State)),
+%    io:format("Project apps: ~p~n", [rebar_state:project_apps(State)]),
     {ok, State}.
 
 -spec format_error(any()) ->  iolist().
 format_error(Reason) ->
     io_lib:format("~p", [Reason]).
+
+process_app(App) ->
+    Path = filename:join(rebar_app_info:dir(App), "asn1"),
+    Asns = find_asn_files(Path),
+    io:format("~tAsns: ~p~n", [Asns]), 
+    ok.
+
+find_asn_files(Path) ->
+    [filename:join(Path, F) || F <- filelib:wildcard("*.asn1", Path)].
