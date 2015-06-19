@@ -62,5 +62,5 @@ find_asn_files(Path) ->
 
 generate_asn(Path, AsnFile) ->
     io:format("Generating ASN.1 stuff.~n"),
-    asn1ct:compile(AsnFile, [ber, verbose, {outdir, filename:join(Path, "include")}]),
+    asn1ct:compile(AsnFile, [ber, verbose, {outdir, filename:join(Path, "include")}]).
     
