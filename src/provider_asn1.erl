@@ -37,7 +37,7 @@ format_error(Reason) ->
 process_app(App) ->
     Path = filename:join(rebar_app_info:dir(App), "asn1"),
     Asns = find_asn_files(Path),
-    io:format("~tAsns: ~p~n", [Asns]), 
+    io:format("    Asns: ~p~n", [Asns]), 
     ok.
 
 find_asn_files(Path) ->
