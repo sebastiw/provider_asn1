@@ -45,4 +45,5 @@ find_asn_files(Path) ->
     [filename:join(Path, F) || F <- filelib:wildcard("*.asn1", Path)].
 
 generate_asn(Path, AsnFile) ->
+    io:format("Generating ASN.1 stuff.~n"),
     asn1ct:compile("AsnFile", [ber, verbose, {outdir, filename:join(Path, "include")}]).
