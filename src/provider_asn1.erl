@@ -44,14 +44,17 @@ process_app(App) ->
     io:format("    Asns: ~p~n", [Asns]), 
     lists:foreach(fun(AsnFile) -> generate_asn(AppPath, AsnFile) end, Asns),
 
+    io:format("ERL files: ~p~n", [filelib:wildcard("*.erl", IncludePath)]),
     lists:foreach(fun(ErlFile) -> 
                           file:rename(ErlFile, SrcPath) end, 
                   filelib:wildcard("*.erl", IncludePath)),
     
+    io:format("DB files: ~p~n", [filelib:wildcard("*.asn1db", IncludePath)]),
     lists:foreach(fun(DBFile) -> 
                           file:rename(DBFile, SrcPath) end, 
                   filelib:wildcard("*.asn1db", IncludePath)),
-   
+
+    io:format("BEAM files: ~p~n", [filelib:wildcard("*.beam", IncludePath)]),
     lists:foreach(fun(BeamFile) -> 
                           file:delete(BeamFile) end, 
                   filelib:wildcard("*.beam", IncludePath)),
