@@ -37,9 +37,24 @@ format_error(Reason) ->
 process_app(App) ->
     AppPath = rebar_app_info:dir(App),
     ASNPath = filename:join(AppPath, "asn1"),
+    IncludePath = filename:join(AppPath, "include"),
+    SrcPath = filename:join(AppPath, "src"),
+
     Asns = find_asn_files(ASNPath),
     io:format("    Asns: ~p~n", [Asns]), 
     lists:foreach(fun(AsnFile) -> generate_asn(AppPath, AsnFile) end, Asns),
+
+    lists:foreach(fun(ErlFile) -> 
+                          file:rename(ErlFile, SrcPath) end, 
+                  filelib:wildcard("*.erl", IncludePath)),
+    
+    lists:foreach(fun(DBFile) -> 
+                          file:rename(DBFile, SrcPath) end, 
+                  filelib:wildcard("*.asn1db", IncludePath)),
+   
+    lists:foreach(fun(BeamFile) -> 
+                          file:delete(BeamFile) end, 
+                  filelib:wildcard("*.beam", IncludePath)),
     ok.
 
 find_asn_files(Path) ->
@@ -47,4 +62,5 @@ find_asn_files(Path) ->
 
 generate_asn(Path, AsnFile) ->
     io:format("Generating ASN.1 stuff.~n"),
-    asn1ct:compile(AsnFile, [ber, verbose, {outdir, filename:join(Path, "include")}]).
+    asn1ct:compile(AsnFile, [ber, verbose, {outdir, filename:join(Path, "include")}]),
+    
