@@ -47,19 +47,19 @@ process_app(App) ->
     io:format("ERL files: ~p~n", [filelib:wildcard("*.erl", IncludePath)]),
     lists:foreach(fun(ErlFile) -> 
                           io:format("Moving: ~p~n", [ErlFile]),
-                          file:rename(ErlFile, SrcPath) end, 
+                          io:format("~p~n", [file:rename(ErlFile, SrcPath)]) end, 
                   filelib:wildcard("*.erl", IncludePath)),
     
     io:format("DB files: ~p~n", [filelib:wildcard("*.asn1db", IncludePath)]),
     lists:foreach(fun(DBFile) -> 
                           io:format("Moving: ~p~n", [DBFile]),
-                          file:rename(DBFile, SrcPath) end, 
+                          io:format("~p~n", [file:rename(DBFile, SrcPath)]) end, 
                   filelib:wildcard("*.asn1db", IncludePath)),
 
     io:format("BEAM files: ~p~n", [filelib:wildcard("*.beam", IncludePath)]),
     lists:foreach(fun(BeamFile) -> 
                           io:format("Moving: ~p~n", [BeamFile]),
-                          file:delete(BeamFile) end, 
+                          io:format("~p~n", [file:delete(BeamFile)]) end, 
                   filelib:wildcard("*.beam", IncludePath)),
     ok.
 
