@@ -38,7 +38,7 @@ process_app(App) ->
     Path = filename:join(rebar_app_info:dir(App), "asn1"),
     Asns = find_asn_files(Path),
     io:format("    Asns: ~p~n", [Asns]), 
-    lists:foreach(fun(AsnFile) -> generate_asn(Path, AsnFile), Asns),
+    lists:foreach(fun(AsnFile) -> generate_asn(Path, AsnFile) end, Asns),
     ok.
 
 find_asn_files(Path) ->
@@ -46,4 +46,4 @@ find_asn_files(Path) ->
 
 generate_asn(Path, AsnFile) ->
     io:format("Generating ASN.1 stuff.~n"),
-    asn1ct:compile("AsnFile", [ber, verbose, {outdir, filename:join(Path, "include")}]).
+    asn1ct:compile(AsnFile, [ber, verbose, {outdir, filename:join(Path, "include")}]).
