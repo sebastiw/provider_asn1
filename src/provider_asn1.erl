@@ -35,10 +35,11 @@ format_error(Reason) ->
     io_lib:format("~p", [Reason]).
 
 process_app(App) ->
-    Path = filename:join(rebar_app_info:dir(App), "asn1"),
-    Asns = find_asn_files(Path),
+    AppPath = rebar_app_info:dir(App),
+    ASNPath = filename:join(AppPath, "asn1"),
+    Asns = find_asn_files(ASNPath),
     io:format("    Asns: ~p~n", [Asns]), 
-    lists:foreach(fun(AsnFile) -> generate_asn(Path, AsnFile) end, Asns),
+    lists:foreach(fun(AsnFile) -> generate_asn(AppPath, AsnFile) end, Asns),
     ok.
 
 find_asn_files(Path) ->
