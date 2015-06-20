@@ -73,7 +73,7 @@ process_app(State, App) ->
 move_files(State, From, To, Pattern) ->
     verbose_out(State, "Making ~p ~p~n", [To, file:make_dir(To)]),
     lists:foreach(fun(File) -> move_file(State, From, File, To) end,
-                  filelib:wildcard(Pattern, From)),
+                  filelib:wildcard(Pattern, From)).
 
 move_file(State, SrcPath, File, DestPath) ->
     F = filename:join(SrcPath, File),
