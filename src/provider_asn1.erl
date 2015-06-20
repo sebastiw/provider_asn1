@@ -28,12 +28,19 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
+    Apps = rebar_state:project_apps(State),
+    AllApps =
+        case lists:member(rebar_state:dir(State), Apps) of
+            true -> Apps;
+            false -> [rebar_state:dir(State) | Apps]
+        end,
+
     {Args, _} = rebar_state:command_parsed_args(State),
     case proplists:get_value(clean, Args) of
         true ->
-            lists:foreach(fun (App) -> do_clean(State, App) end, rebar_state:project_apps(State));
+            lists:foreach(fun (App) -> do_clean(State, App) end, AllApps);
         _ ->
-            lists:foreach(fun (App) -> process_app(State, App) end, rebar_state:project_apps(State))
+            lists:foreach(fun (App) -> process_app(State, rebar_app_info:dir(App)) end, AllApps)
     end,
     {ok, State}.
 
@@ -41,8 +48,7 @@ do(State) ->
 format_error(Reason) ->
     io_lib:format("~p", [Reason]).
 
-process_app(State, App) ->
-    AppPath = rebar_app_info:dir(App),
+process_app(State, AppPath) ->
     ASNPath = filename:join(AppPath, "asn1"),
     GenPath = filename:join(AppPath, "asngen"),
     IncludePath = filename:join(AppPath, "include"),
