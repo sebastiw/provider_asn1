@@ -44,35 +44,44 @@ format_error(Reason) ->
 process_app(State, App) ->
     AppPath = rebar_app_info:dir(App),
     ASNPath = filename:join(AppPath, "asn1"),
+    GenPath = filename:join(AppPath, "asngen"),
     IncludePath = filename:join(AppPath, "include"),
     SrcPath = filename:join(AppPath, "src"),
 
     Asns = find_asn_files(ASNPath),
     verbose_out(State, "    Asns: ~p", [Asns]), 
-    lists:foreach(fun(AsnFile) -> generate_asn(State, AppPath, AsnFile) end, Asns),
+    lists:foreach(fun(AsnFile) -> generate_asn(State, GenPath, AsnFile) end, Asns),
 
-    verbose_out(State, "ERL files: ~p", [filelib:wildcard("*.erl", IncludePath)]),
+    verbose_out(State, "ERL files: ~p", [filelib:wildcard("*.erl", GenPath)]),
     lists:foreach(fun(ErlFile) -> 
-                          F = filename:join(IncludePath, ErlFile),
+                          F = filename:join(GenPath, ErlFile),
                           Dest = filename:join(SrcPath, ErlFile),
                           verbose_out(State, "Moving: ~p", [F]),
-                          verbose_out(State, "~p", [file:rename(F, Dest)]) end, 
-                  filelib:wildcard("*.erl", IncludePath)),
+                          verbose_out(State, "~p", [file:copy(F, Dest)]) end, 
+                  filelib:wildcard("*.erl", GenPath)),
     
-    verbose_out(State, "DB files: ~p", [filelib:wildcard("*.asn1db", IncludePath)]),
+    verbose_out(State, "DB files: ~p", [filelib:wildcard("*.asn1db", GenPath)]),
     lists:foreach(fun(DBFile) -> 
-                          F = filename:join(IncludePath, DBFile),
+                          F = filename:join(GenPath, DBFile),
                           Dest = filename:join(SrcPath, DBFile),
                           verbose_out(State, "Moving: ~p", [F]),
-                          verbose_out(State, "~p", [file:rename(F, Dest)]) end, 
-                  filelib:wildcard("*.asn1db", IncludePath)),
+                          verbose_out(State, "~p", [file:copy(F, Dest)]) end, 
+                  filelib:wildcard("*.asn1db", GenPath)),
 
-    verbose_out(State, "BEAM files: ~p", [filelib:wildcard("*.beam", IncludePath)]),
-    lists:foreach(fun(BeamFile) -> 
-                          F = filename:join(IncludePath, BeamFile),
+    verbose_out(State, "HEADER files: ~p", [filelib:wildcard("*.hrl", GenPath)]),
+    lists:foreach(fun(DBFile) -> 
+                          F = filename:join(GenPath, DBFile),
+                          Dest = filename:join(IncludePath, DBFile),
                           verbose_out(State, "Moving: ~p", [F]),
+                          verbose_out(State, "~p", [file:copy(F, Dest)]) end, 
+                  filelib:wildcard("*.hrl", GenPath)),
+
+    verbose_out(State, "BEAM files: ~p", [filelib:wildcard("*.beam", GenPath)]),
+    lists:foreach(fun(BeamFile) -> 
+                          F = filename:join(GenPath, BeamFile),
+                          verbose_out(State, "Deleting: ~p", [F]),
                           verbose_out(State, "~p", [file:delete(F)]) end, 
-                  filelib:wildcard("*.beam", IncludePath)),
+                  filelib:wildcard("*.beam", GenPath)),
     ok.
 
 find_asn_files(Path) ->
@@ -83,8 +92,8 @@ generate_asn(State, Path, AsnFile) ->
     {Args, _} = rebar_state:command_parsed_args(State),
     CompileArgs = 
         case proplists:get_value(verbose, Args) of
-            true -> [ber, verbose, {outdir, filename:join(Path, "include")}];
-            _ -> [ber, {outdir, filename:join(Path, "include")}]
+            true -> [ber, verbose, {outdir, Path}];
+            _ -> [ber, {outdir, Path}]
         end,
     asn1ct:compile(AsnFile, CompileArgs).
 
