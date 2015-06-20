@@ -49,38 +49,40 @@ process_app(State, App) ->
     SrcPath = filename:join(AppPath, "src"),
 
     Asns = find_asn_files(ASNPath),
-    verbose_out(State, "    Asns: ~p", [Asns]), 
+    verbose_out(State, "    Asns: ~p", [Asns]),
     lists:foreach(fun(AsnFile) -> generate_asn(State, GenPath, AsnFile) end, Asns),
 
     verbose_out(State, "ERL files: ~p", [filelib:wildcard("*.erl", GenPath)]),
-    lists:foreach(fun(ErlFile) -> 
+    make_dir(SrcPath),
+    lists:foreach(fun(ErlFile) ->
                           F = filename:join(GenPath, ErlFile),
                           Dest = filename:join(SrcPath, ErlFile),
                           verbose_out(State, "Moving: ~p", [F]),
-                          verbose_out(State, "~p", [file:copy(F, Dest)]) end, 
+                          verbose_out(State, "~p", [file:copy(F, Dest)]) end,
                   filelib:wildcard("*.erl", GenPath)),
-    
+
     verbose_out(State, "DB files: ~p", [filelib:wildcard("*.asn1db", GenPath)]),
-    lists:foreach(fun(DBFile) -> 
+    lists:foreach(fun(DBFile) ->
                           F = filename:join(GenPath, DBFile),
                           Dest = filename:join(SrcPath, DBFile),
                           verbose_out(State, "Moving: ~p", [F]),
-                          verbose_out(State, "~p", [file:copy(F, Dest)]) end, 
+                          verbose_out(State, "~p", [file:copy(F, Dest)]) end,
                   filelib:wildcard("*.asn1db", GenPath)),
 
     verbose_out(State, "HEADER files: ~p", [filelib:wildcard("*.hrl", GenPath)]),
-    lists:foreach(fun(DBFile) -> 
+    make_dir(IncludePath),
+    lists:foreach(fun(DBFile) ->
                           F = filename:join(GenPath, DBFile),
                           Dest = filename:join(IncludePath, DBFile),
                           verbose_out(State, "Moving: ~p", [F]),
-                          verbose_out(State, "~p", [file:copy(F, Dest)]) end, 
+                          verbose_out(State, "~p", [file:copy(F, Dest)]) end,
                   filelib:wildcard("*.hrl", GenPath)),
 
     verbose_out(State, "BEAM files: ~p", [filelib:wildcard("*.beam", GenPath)]),
-    lists:foreach(fun(BeamFile) -> 
+    lists:foreach(fun(BeamFile) ->
                           F = filename:join(GenPath, BeamFile),
                           verbose_out(State, "Deleting: ~p", [F]),
-                          verbose_out(State, "~p", [file:delete(F)]) end, 
+                          verbose_out(State, "~p", [file:delete(F)]) end,
                   filelib:wildcard("*.beam", GenPath)),
     ok.
 
@@ -90,7 +92,7 @@ find_asn_files(Path) ->
 generate_asn(State, Path, AsnFile) ->
     rebar_api:info("Generating ASN.1 files.", []),
     {Args, _} = rebar_state:command_parsed_args(State),
-    CompileArgs = 
+    CompileArgs =
         case proplists:get_value(verbose, Args) of
             true -> [ber, verbose, {outdir, Path}];
             _ -> [ber, {outdir, Path}]
