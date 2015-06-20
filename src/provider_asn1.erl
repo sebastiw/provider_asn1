@@ -31,7 +31,7 @@ do(State) ->
     {Args, _} = rebar_state:command_parsed_args(State),
     case proplists:get_value(clean, Args) of
         true ->
-            do_clean(State);
+            lists:foreach(fun (App) -> do_clean(State, App) end, rebar_state:project_apps(State));
         _ ->
             lists:foreach(fun (App) -> process_app(State, App) end, rebar_state:project_apps(State))
     end,
@@ -80,10 +80,14 @@ move_file(State, SrcPath, File, DestPath) ->
 
 delete_files(State, In, Pattern) ->
     lists:foreach(fun(File) ->
-                          F = filename:join(In, File),
-                          verbose_out(State, "Deleting: ~p", [F]),
-                          verbose_out(State, "~p", [file:delete(F)]) end,
+                          delete_file(State, In, File)
+                  end,
                   filelib:wildcard(Pattern, In)).
+
+delete_file(State, In, File) ->
+    F = filename:join(In, File),
+    verbose_out(State, "Deleting: ~p", [F]),
+    verbose_out(State, "~p", [file:delete(F)])
 
 find_asn_files(Path) ->
     [filename:join(Path, F) || F <- filelib:wildcard("*.asn1", Path)].
@@ -99,7 +103,30 @@ generate_asn(State, Path, AsnFile) ->
     asn1ct:compile(AsnFile, CompileArgs).
 
 
-do_clean(_State) ->
+do_clean(State, App) ->
+    AppPath = rebar_app_info:dir(App),
+    GenPath = filename:join(AppPath, "asngen"),
+    IncludePath = filename:join(AppPath, "include"),
+    SrcPath = filename:join(AppPath, "src"),
+
+    ErlFiles = filelib:wildcard("*.erl", GenPath),
+    verbose_out(State, "Erl files: ~p", [ErlFiles]),
+    lists:foreach(fun(File) ->
+                          delete_file(State, SrcPath, File)
+                  end,, ErlFiles),
+
+    HrlFiles = filelib:wildcard("*.hrl", GenPath),
+    verbose_out(State, "Hrl files: ~p", [HrlFiles]),
+    lists:foreach(fun(File) ->
+                          delete_file(State, IncludePath, File)
+                  end,, HrlFiles),
+
+    DBFiles = filelib:wildcard("*.asn1db", GenPath),
+    verbose_out(State, "DB files: ~p", [DBFiles]),
+    lists:foreach(fun(File) ->
+                          delete_file(State, SrcPath, File)
+                  end,, DBFiles),
+
     ok.
 
 verbose_out(State, FormatString, Args)->
