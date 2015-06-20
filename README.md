@@ -25,6 +25,8 @@ Then just call your plugin directly in an existing application:
     ===> Compiling provider_asn1
     <Plugin Output>
 
+The plugin will look in an app directory called 'asn1' for *.asn1 files, compile them, and move the generated source to the appropriate places.
+
 The command has two options:
  * `--verbose -v` Lots of output.
  * `--clean -c` Remove the generated files
