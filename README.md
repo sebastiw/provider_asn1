@@ -26,5 +26,5 @@ Then just call your plugin directly in an existing application:
     <Plugin Output>
 
 The command has two options:
-`--verbose -v` Lots of output.
-`--clean -c` Remove the generated files
+ * `--verbose -v` Lots of output.
+ * `--clean -c` Remove the generated files
