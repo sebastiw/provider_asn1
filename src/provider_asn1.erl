@@ -28,7 +28,8 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-    Apps = rebar_state:project_apps(State),
+    Apps = lists:map(fun (App) -> rebar_app_info:dir(App) end,
+                     rebar_state:project_apps(State)),
     AllApps =
         case lists:member(rebar_state:dir(State), Apps) of
             true -> Apps;
@@ -40,7 +41,7 @@ do(State) ->
         true ->
             lists:foreach(fun (App) -> do_clean(State, App) end, AllApps);
         _ ->
-            lists:foreach(fun (App) -> process_app(State, rebar_app_info:dir(App)) end, AllApps)
+            lists:foreach(fun (App) -> process_app(State, App) end, AllApps)
     end,
     {ok, State}.
 
@@ -109,10 +110,9 @@ generate_asn(State, Path, AsnFile) ->
     asn1ct:compile(AsnFile, CompileArgs).
 
 
-do_clean(State, App) ->
+do_clean(State, AppPath) ->
     rebar_api:info("Cleaning ASN.1 generated files.", []),
 
-    AppPath = rebar_app_info:dir(App),
     GenPath = filename:join(AppPath, "asngen"),
     IncludePath = filename:join(AppPath, "include"),
     SrcPath = filename:join(AppPath, "src"),
