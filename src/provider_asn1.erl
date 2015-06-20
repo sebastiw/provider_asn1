@@ -87,7 +87,7 @@ delete_files(State, In, Pattern) ->
 delete_file(State, In, File) ->
     F = filename:join(In, File),
     verbose_out(State, "Deleting: ~p", [F]),
-    verbose_out(State, "~p", [file:delete(F)])
+    verbose_out(State, "~p", [file:delete(F)]).
 
 find_asn_files(Path) ->
     [filename:join(Path, F) || F <- filelib:wildcard("*.asn1", Path)].
@@ -113,19 +113,19 @@ do_clean(State, App) ->
     verbose_out(State, "Erl files: ~p", [ErlFiles]),
     lists:foreach(fun(File) ->
                           delete_file(State, SrcPath, File)
-                  end,, ErlFiles),
+                  end, ErlFiles),
 
     HrlFiles = filelib:wildcard("*.hrl", GenPath),
     verbose_out(State, "Hrl files: ~p", [HrlFiles]),
     lists:foreach(fun(File) ->
                           delete_file(State, IncludePath, File)
-                  end,, HrlFiles),
+                  end, HrlFiles),
 
     DBFiles = filelib:wildcard("*.asn1db", GenPath),
     verbose_out(State, "DB files: ~p", [DBFiles]),
     lists:foreach(fun(File) ->
                           delete_file(State, SrcPath, File)
-                  end,, DBFiles),
+                  end, DBFiles),
 
     ok.
 
