@@ -104,6 +104,8 @@ generate_asn(State, Path, AsnFile) ->
 
 
 do_clean(State, App) ->
+    rebar_api:info("Cleaning ASN.1 generated files.", []),
+
     AppPath = rebar_app_info:dir(App),
     GenPath = filename:join(AppPath, "asngen"),
     IncludePath = filename:join(AppPath, "include"),
