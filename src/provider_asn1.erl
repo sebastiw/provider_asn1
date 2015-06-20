@@ -70,7 +70,7 @@ process_app(State, App) ->
                   filelib:wildcard("*.asn1db", GenPath)),
 
     verbose_out(State, "HEADER files: ~p", [filelib:wildcard("*.hrl", GenPath)]),
-    make_dir(IncludePath),
+    verbose_out(State, "Making ~p ~p~n", [IncludePath, make_dir(IncludePath)]),
     lists:foreach(fun(DBFile) ->
                           F = filename:join(GenPath, DBFile),
                           Dest = filename:join(IncludePath, DBFile),
