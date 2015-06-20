@@ -55,28 +55,16 @@ process_app(State, App) ->
 
     verbose_out(State, "ERL files: ~p", [filelib:wildcard("*.erl", GenPath)]),
     verbose_out(State, "Making ~p ~p~n", [SrcPath, file:make_dir(SrcPath)]),
-    lists:foreach(fun(ErlFile) ->
-                          F = filename:join(GenPath, ErlFile),
-                          Dest = filename:join(SrcPath, ErlFile),
-                          verbose_out(State, "Moving: ~p", [F]),
-                          verbose_out(State, "~p", [file:copy(F, Dest)]) end,
+    lists:foreach(fun(ErlFile) -> move_file(GenPath, ErlFile, SrcPath) end,
                   filelib:wildcard("*.erl", GenPath)),
 
     verbose_out(State, "DB files: ~p", [filelib:wildcard("*.asn1db", GenPath)]),
-    lists:foreach(fun(DBFile) ->
-                          F = filename:join(GenPath, DBFile),
-                          Dest = filename:join(SrcPath, DBFile),
-                          verbose_out(State, "Moving: ~p", [F]),
-                          verbose_out(State, "~p", [file:copy(F, Dest)]) end,
+    lists:foreach(fun(DBFile) -> move_file(GenPath, DBFile, SrcPath) end,
                   filelib:wildcard("*.asn1db", GenPath)),
 
     verbose_out(State, "HEADER files: ~p", [filelib:wildcard("*.hrl", GenPath)]),
     verbose_out(State, "Making ~p ~p~n", [IncludePath, file:make_dir(IncludePath)]),
-    lists:foreach(fun(DBFile) ->
-                          F = filename:join(GenPath, DBFile),
-                          Dest = filename:join(IncludePath, DBFile),
-                          verbose_out(State, "Moving: ~p", [F]),
-                          verbose_out(State, "~p", [file:copy(F, Dest)]) end,
+    lists:foreach(fun(HeaderFile) -> move_file(GenPath, HeaderFile, IncludePath) end,
                   filelib:wildcard("*.hrl", GenPath)),
 
     verbose_out(State, "BEAM files: ~p", [filelib:wildcard("*.beam", GenPath)]),
@@ -86,6 +74,12 @@ process_app(State, App) ->
                           verbose_out(State, "~p", [file:delete(F)]) end,
                   filelib:wildcard("*.beam", GenPath)),
     ok.
+
+move_file(SrcPath, File, DestPath) ->
+    F = filename:join(SrcPath, File),
+    Dest = filename:join(DestPath, File),
+    verbose_out(State, "Moving: ~p", [F]),
+    verbose_out(State, "~p", [file:copy(F, Dest)])
 
 find_asn_files(Path) ->
     [filename:join(Path, F) || F <- filelib:wildcard("*.asn1", Path)].
