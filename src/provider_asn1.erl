@@ -127,6 +127,8 @@ do_clean(State, App) ->
                           delete_file(State, SrcPath, File)
                   end, DBFiles),
 
+    delete_files(State, GenPath, "*"),
+
     ok.
 
 verbose_out(State, FormatString, Args)->
