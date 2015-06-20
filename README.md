@@ -14,7 +14,7 @@ Use
 Add the plugin to your rebar config:
 
     {plugins, [
-        { provider_asn1, ".*", {git, "git@github.com:knusbaum/provider_asn1.git", {tag, "0.1.0"}}}
+        { provider_asn1, ".*", {git, "git@github.com:knusbaum/provider_asn1.git", {tag, "0.1.1"}}}
     ]}.
 
 Then just call your plugin directly in an existing application:
