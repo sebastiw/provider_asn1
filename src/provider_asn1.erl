@@ -50,10 +50,11 @@ process_app(State, App) ->
 
     Asns = find_asn_files(ASNPath),
     verbose_out(State, "    Asns: ~p", [Asns]),
+    verbose_out(State, "Making ~p ~p~n", [GenPath, file:make_dir(GenPath)]),
     lists:foreach(fun(AsnFile) -> generate_asn(State, GenPath, AsnFile) end, Asns),
 
     verbose_out(State, "ERL files: ~p", [filelib:wildcard("*.erl", GenPath)]),
-    file:make_dir(SrcPath),
+    verbose_out(State, "Making ~p ~p~n", [SrcPath, file:make_dir(SrcPath)]),
     lists:foreach(fun(ErlFile) ->
                           F = filename:join(GenPath, ErlFile),
                           Dest = filename:join(SrcPath, ErlFile),
