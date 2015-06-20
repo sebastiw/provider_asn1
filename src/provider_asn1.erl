@@ -63,11 +63,8 @@ process_app(State, App) ->
     move_files(State, GenPath, IncludePath, "*.hrl"),
 
     verbose_out(State, "BEAM files: ~p", [filelib:wildcard("*.beam", GenPath)]),
-    lists:foreach(fun(BeamFile) ->
-                          F = filename:join(GenPath, BeamFile),
-                          verbose_out(State, "Deleting: ~p", [F]),
-                          verbose_out(State, "~p", [file:delete(F)]) end,
-                  filelib:wildcard("*.beam", GenPath)),
+    delete_files(State, GenPath, "*.beam"),
+
     ok.
 
 move_files(State, From, To, Pattern) ->
@@ -80,6 +77,13 @@ move_file(State, SrcPath, File, DestPath) ->
     Dest = filename:join(DestPath, File),
     verbose_out(State, "Moving: ~p", [F]),
     verbose_out(State, "~p", [file:copy(F, Dest)]).
+
+delete_files(State, In, Pattern) ->
+    lists:foreach(fun(File) ->
+                          F = filename:join(In, File),
+                          verbose_out(State, "Deleting: ~p", [F]),
+                          verbose_out(State, "~p", [file:delete(F)]) end,
+                  filelib:wildcard(Pattern, In)).
 
 find_asn_files(Path) ->
     [filename:join(Path, F) || F <- filelib:wildcard("*.asn1", Path)].
