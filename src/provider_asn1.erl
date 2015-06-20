@@ -54,18 +54,13 @@ process_app(State, App) ->
     lists:foreach(fun(AsnFile) -> generate_asn(State, GenPath, AsnFile) end, Asns),
 
     verbose_out(State, "ERL files: ~p", [filelib:wildcard("*.erl", GenPath)]),
-    verbose_out(State, "Making ~p ~p~n", [SrcPath, file:make_dir(SrcPath)]),
-    lists:foreach(fun(ErlFile) -> move_file(State, GenPath, ErlFile, SrcPath) end,
-                  filelib:wildcard("*.erl", GenPath)),
+    move_files(State, GenPath, SrcPath, "*.erl"),
 
     verbose_out(State, "DB files: ~p", [filelib:wildcard("*.asn1db", GenPath)]),
-    lists:foreach(fun(DBFile) -> move_file(State, GenPath, DBFile, SrcPath) end,
-                  filelib:wildcard("*.asn1db", GenPath)),
+    move_files(State, GenPath, SrcPath, "*.asn1db"),
 
     verbose_out(State, "HEADER files: ~p", [filelib:wildcard("*.hrl", GenPath)]),
-    verbose_out(State, "Making ~p ~p~n", [IncludePath, file:make_dir(IncludePath)]),
-    lists:foreach(fun(HeaderFile) -> move_file(State, GenPath, HeaderFile, IncludePath) end,
-                  filelib:wildcard("*.hrl", GenPath)),
+    move_files(State, GenPath, IncludePath, "*.hrl"),
 
     verbose_out(State, "BEAM files: ~p", [filelib:wildcard("*.beam", GenPath)]),
     lists:foreach(fun(BeamFile) ->
@@ -74,6 +69,11 @@ process_app(State, App) ->
                           verbose_out(State, "~p", [file:delete(F)]) end,
                   filelib:wildcard("*.beam", GenPath)),
     ok.
+
+move_files(State, From, To, Pattern) ->
+    verbose_out(State, "Making ~p ~p~n", [To, file:make_dir(To)]),
+    lists:foreach(fun(File) -> move_file(State, From, File, To) end,
+                  filelib:wildcard(Pattern, From)),
 
 move_file(State, SrcPath, File, DestPath) ->
     F = filename:join(SrcPath, File),
