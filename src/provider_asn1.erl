@@ -53,7 +53,7 @@ process_app(State, App) ->
     lists:foreach(fun(AsnFile) -> generate_asn(State, GenPath, AsnFile) end, Asns),
 
     verbose_out(State, "ERL files: ~p", [filelib:wildcard("*.erl", GenPath)]),
-    make_dir(SrcPath),
+    file:make_dir(SrcPath),
     lists:foreach(fun(ErlFile) ->
                           F = filename:join(GenPath, ErlFile),
                           Dest = filename:join(SrcPath, ErlFile),
@@ -70,7 +70,7 @@ process_app(State, App) ->
                   filelib:wildcard("*.asn1db", GenPath)),
 
     verbose_out(State, "HEADER files: ~p", [filelib:wildcard("*.hrl", GenPath)]),
-    verbose_out(State, "Making ~p ~p~n", [IncludePath, make_dir(IncludePath)]),
+    verbose_out(State, "Making ~p ~p~n", [IncludePath, file:make_dir(IncludePath)]),
     lists:foreach(fun(DBFile) ->
                           F = filename:join(GenPath, DBFile),
                           Dest = filename:join(IncludePath, DBFile),
