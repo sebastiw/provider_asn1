@@ -11,19 +11,29 @@ Build
 Use
 ---
 
-Add the plugin to your rebar config:
+The plugin can be accessed via hex.pm:
+```
+{plugins, [
+    rebar3_hex,
+    { provider_asn1, "0.1.2"}
+]}.
+```
 
-    {plugins, [
-        { provider_asn1, ".*", {git, "git@github.com:knusbaum/provider_asn1.git", {tag, "0.1.1"}}}
-    ]}.
+You can also pull the plugin directly from git:
+```
+{plugins, [
+    { provider_asn1, ".*", {git, "git@github.com:knusbaum/provider_asn1.git", {tag, "0.1.2"}}}
+]}.
+```
 
 Then just call your plugin directly in an existing application:
 
-
-    $ rebar3 asn
-    ===> Fetching provider_asn1
-    ===> Compiling provider_asn1
-    <Plugin Output>
+```
+$ rebar3 asn
+===> Fetching provider_asn1
+===> Compiling provider_asn1
+<Plugin Output>
+```
 
 The plugin will look in an app directory called 'asn1' for *.asn1 files, compile them, and move the generated source to the appropriate places.
 
