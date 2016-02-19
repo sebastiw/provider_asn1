@@ -7,5 +7,7 @@
     stdlib
    ]},
   {env,[]},
-  {modules, []}
- ]}.
+  {modules, [provider_asn1]},
+  {maintainers, ["knusbaum <KyleJNusbaum@gmail.com>"]},
+  {licenses, ["MIT/Expat"]},
+  {links, #{"GitHub" => "https://github.com/knusbaum/provider_asn1"}}]}.
