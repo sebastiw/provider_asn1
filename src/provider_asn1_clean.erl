@@ -10,7 +10,7 @@
          delete_files/3,
          delete_file/3]).
 
--define(PROVIDER, 'compile').
+-define(PROVIDER, 'clean').
 -define(DEPS, [{default, app_discovery}]).
 
 %% ===================================================================
