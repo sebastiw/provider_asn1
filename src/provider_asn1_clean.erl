@@ -27,8 +27,8 @@ init(State) ->
             {example, "rebar3 asn clean"}, % How to use the plugin
             % list of options understood by the plugin
             {opts, [{verbose, $v, "verbose", {boolean, false}, "Be Verbose."}]},
-            {short_desc, "Compile ASN.1 with Rebar3"},
-            {desc, "Compile ASN.1 with Rebar3"}
+            {short_desc, "Clean up ASN.1 generated files."},
+            {desc, "Clean up ASN.1 generated files."}
     ]),
     {ok, rebar_state:add_provider(State, Provider)}.
 
