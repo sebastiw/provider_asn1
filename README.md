@@ -3,11 +3,6 @@ provider_asn1
 
 Compile ASN.1 with Rebar3
 
-Build
------
-
-    $ rebar3 asn compile
-
 Use
 ---
 
@@ -50,7 +45,7 @@ For example, Your project should have a structure like this:
 └── src
     └── some_app.erl
 ```
-Then if you run `rebar3 asn`, your asn.1 files will be compiled:
+Then if you run `rebar3 asn compile`, your asn.1 files will be compiled:
 ```
 $ rebar3 asn compile
 ===> Fetching provider_asn1 ({git,
@@ -96,6 +91,7 @@ rebar.config:
 ...
 ```
 Now your asn.1 files will be compiled before your other files, so they'll always be available when you build.
+When you clean, the generated files will be removed and you'll be left with a clean working directory.
 
-The command has two options:
- * `--verbose -v` Lots of output.
+The command has one option:
+ * `--verbose -v` Lots of output for debugging.
