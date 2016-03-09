@@ -11,7 +11,7 @@
          delete_file/3]).
 
 -define(PROVIDER, 'compile').
--define(DEPS, [app_discovery]).
+-define(DEPS, [{default, app_discovery}]).
 
 %% ===================================================================
 %% Public API
