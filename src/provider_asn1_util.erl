@@ -5,10 +5,14 @@
          move_files/4,
          move_file/4,
          delete_files/3,
-         delete_file/3]).
+         delete_file/3,
+         resolve_args/2,
+         get_args/1,
+         get_arg/2,
+         set_arg/3]).
 
 verbose_out(State, FormatString, Args)->
-    {CommArgs, _} = rebar_state:command_parsed_args(State),
+    CommArgs = get_args(State),
     case proplists:get_value(verbose, CommArgs) of
         true ->
             rebar_api:info(FormatString, Args);
@@ -41,3 +45,28 @@ delete_file(State, In, File) ->
     F = filename:join(In, File),
     verbose_out(State, "Deleting: ~p", [F]),
     verbose_out(State, "~p", [file:delete(F)]).
+
+resolve_args(State, Defaults) ->
+    {PArgs, _} = rebar_state:command_parsed_args(State),
+    Config = rebar_state:get(State, asn1_args, []),
+
+    PArgsMap = maps:from_list(PArgs),
+    ConfigMap = maps:from_list(Config),
+    DefaultsMap = maps:from_list(Defaults),
+
+    % Defaults overridden by Config overridden by PArgs (command-line)
+    ResolvedMap = maps:merge(maps:merge(DefaultsMap, ConfigMap), PArgsMap),
+    ResolvedArgs = maps:to_list(ResolvedMap),
+    rebar_state:set(State, asn1_args, ResolvedArgs).
+
+get_args(State) ->
+    rebar_state:get(State, asn1_args, []).
+
+get_arg(State, Key) ->
+    Args = rebar_state:get(State, asn1_args, []),
+    proplists:get_value(Key, Args).
+
+set_arg(State, Key, Val) ->
+    Args = rebar_state:get(State, asn1_args, []),
+    ArgsMap = maps:from_list(Args),
+    rebar_state:set(State, asn1_args, maps:to_list(maps:put(Key, Val, ArgsMap))).

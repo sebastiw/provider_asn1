@@ -8,10 +8,12 @@
          move_files/4,
          move_file/4,
          delete_files/3,
-         delete_file/3]).
+         delete_file/3,
+         resolve_args/2]).
 
 -define(PROVIDER, 'clean').
 -define(DEPS, [{default, app_discovery}]).
+-define(DEFAULTS, [{verbose, false}]).
 
 %% ===================================================================
 %% Public API
@@ -26,14 +28,15 @@ init(State) ->
             {deps, ?DEPS},                 % The list of dependencies
             {example, "rebar3 asn clean"}, % How to use the plugin
             % list of options understood by the plugin
-            {opts, [{verbose, $v, "verbose", {boolean, false}, "Be Verbose."}]},
+            {opts, [{verbose, $v, "verbose", boolean, "Be Verbose."}]},
             {short_desc, "Clean up ASN.1 generated files."},
             {desc, "Clean up ASN.1 generated files."}
     ]),
     {ok, rebar_state:add_provider(State, Provider)}.
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
-do(State) ->
+do(PreState) ->
+    State = resolve_args(PreState, ?DEFAULTS),
     Apps = lists:map(fun (App) -> rebar_app_info:dir(App) end,
                      rebar_state:project_apps(State)),
     AllApps =

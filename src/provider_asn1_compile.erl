@@ -3,15 +3,20 @@
 
 -export([init/1, do/1, format_error/1]).
 
--import(provider_asn1_util, 
+-import(provider_asn1_util,
         [verbose_out/3,
          move_files/4,
          move_file/4,
          delete_files/3,
-         delete_file/3]).
+         delete_file/3,
+         resolve_args/2,
+         get_args/1,
+         get_arg/2,
+         set_arg/3]).
 
 -define(PROVIDER, 'compile').
 -define(DEPS, [{default, app_discovery}]).
+-define(DEFAULTS, [{verbose, false}, {encoding, ber}, {compile_opts, []}]).
 
 %% ===================================================================
 %% Public API
@@ -26,14 +31,30 @@ init(State) ->
             {deps, ?DEPS},                   % The list of dependencies
             {example, "rebar3 asn compile"}, % How to use the plugin
             % list of options understood by the plugin
-            {opts, [{verbose, $v, "verbose", {boolean, false}, "Be Verbose."}]},
+            {opts, [{verbose, $v, "verbose", boolean, "Be Verbose."},
+                    {encoding, $e, "encoding", atom, "The encoding to use (atom). ber by default."},
+                    {compile_opts, $o, "compile_opts", binary, "A comma-separated list of options to send to erlang's asn.1 compiler."}]},
             {short_desc, "Compile ASN.1 with Rebar3"},
             {desc, "Compile ASN.1 with Rebar3"}
     ]),
     {ok, rebar_state:add_provider(State, Provider)}.
 
+resolve_special_args(PreState) ->
+    NewState = resolve_args(PreState, ?DEFAULTS),
+    CompileOpts = get_arg(NewState, compile_opts),
+    if
+        is_binary(CompileOpts) ->
+            NewCompileOpts = lists:map(fun(X) ->
+                                               binary_to_atom(X, utf8) end,
+                                       re:split(CompileOpts, ",")),
+            set_arg(NewState, compile_opts, NewCompileOpts);
+        true -> NewState
+    end.
+
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
-do(State) ->
+do(PreState) ->
+    State = resolve_special_args(PreState),
+
     Apps = lists:map(fun (App) -> rebar_app_info:dir(App) end,
                      rebar_state:project_apps(State)),
     AllApps =
@@ -41,7 +62,7 @@ do(State) ->
             true -> Apps;
             false -> [rebar_state:dir(State) | Apps]
         end,
-    
+
     lists:foreach(fun (App) -> process_app(State, App) end, AllApps),
     {ok, State}.
 
@@ -78,10 +99,13 @@ find_asn_files(Path) ->
 
 generate_asn(State, Path, AsnFile) ->
     rebar_api:info("Generating ASN.1 files.", []),
-    {Args, _} = rebar_state:command_parsed_args(State),
+    Args = get_args(State),
+    verbose_out(State, "Args: ~p", [Args]),
+    Encoding = proplists:get_value(encoding, Args),
     CompileArgs =
         case proplists:get_value(verbose, Args) of
-            true -> [ber, verbose, {outdir, Path}];
-            _ -> [ber, {outdir, Path}]
-        end,
+            true -> [Encoding, verbose, {outdir, Path}];
+            _ -> [Encoding, {outdir, Path}]
+        end ++ proplists:get_value(compile_opts, Args),
+    verbose_out(State, "Beginning compile with opts: ~p", [CompileArgs]),
     asn1ct:compile(AsnFile, CompileArgs).
