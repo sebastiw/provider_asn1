@@ -74,7 +74,7 @@ format_error(Reason) ->
     provider_asn1_util:format_error(Reason).
 
 find_asn_files(Path) ->
-    [filename:join(Path, F) || F <- filelib:wildcard("*.asn1", Path)].
+    [filename:join(Path, F) || F <- filelib:wildcard("**/*.asn1", Path)].
 
 generate_asn(State, Path, AsnFile) ->
     rebar_api:info("Generating ASN.1 files.", []),
