@@ -93,5 +93,24 @@ rebar.config:
 Now your asn.1 files will be compiled before your other files, so they'll always be available when you build.
 When you clean, the generated files will be removed and you'll be left with a clean working directory.
 
-The command has one option:
+The provider_asn1 plugin has a few configuration options.
+They can be placed in your `rebar.config` file, or issued on the command line.
+
+The options are as follows:
  * `--verbose -v` Lots of output for debugging.
+ * `--encoding -e` Pick the encoding used by the asn compiler. Options are `ber`, `per`, and `uper`. `ber` is the default.
+ * `--compile_opts -o` A comma-separated list of options to send to erlang's asn.1 compiler. See http://erlang.org/doc/man/asn1ct.html#compile-2 for available options.
+
+Example:
+```
+$ rebar3 asn compile -v -e per -o'der,compact_bit_string'
+```
+
+As mentioned, these options can be put in your `rebar.config` file:
+```
+{asn1_args, [{encoding, per},
+             {verbose, true},
+             {compile_opts, [der, compact_bit_string]}]}.
+```
+
+Options in `rebar.config` will be overridden by command-line options.
