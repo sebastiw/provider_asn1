@@ -72,24 +72,25 @@ process_app(State, AppPath) ->
     IncludePath = filename:join(AppPath, "include"),
     SrcPath = filename:join(AppPath, "src"),
 
-    Asns = find_asn_files(ASNPath),
-    verbose_out(State, "    Asns: ~p", [Asns]),
-    verbose_out(State, "Making ~p ~p~n", [GenPath, file:make_dir(GenPath)]),
-    lists:foreach(fun(AsnFile) -> generate_asn(State, GenPath, AsnFile) end, Asns),
+    case find_asn_files(ASNPath) of
+        [] ->
+            ok;
+        Asns ->
+            verbose_out(State, "    Asns: ~p", [Asns]),
+            verbose_out(State, "Making ~p ~p~n", [GenPath, file:make_dir(GenPath)]),
+            lists:foreach(fun(AsnFile) -> generate_asn(State, GenPath, AsnFile) end, Asns),
 
-    verbose_out(State, "ERL files: ~p", [filelib:wildcard("*.erl", GenPath)]),
-    move_files(State, GenPath, SrcPath, "*.erl"),
+            verbose_out(State, "ERL files: ~p", [filelib:wildcard("*.erl", GenPath)]),
+            move_files(State, GenPath, SrcPath, "*.erl"),
 
-    verbose_out(State, "DB files: ~p", [filelib:wildcard("*.asn1db", GenPath)]),
-    move_files(State, GenPath, SrcPath, "*.asn1db"),
+            verbose_out(State, "DB files: ~p", [filelib:wildcard("*.asn1db", GenPath)]),
+            move_files(State, GenPath, SrcPath, "*.asn1db"),
 
-    verbose_out(State, "HEADER files: ~p", [filelib:wildcard("*.hrl", GenPath)]),
-    move_files(State, GenPath, IncludePath, "*.hrl"),
+            verbose_out(State, "HEADER files: ~p", [filelib:wildcard("*.hrl", GenPath)]),
+            move_files(State, GenPath, IncludePath, "*.hrl"),
 
-    verbose_out(State, "BEAM files: ~p", [filelib:wildcard("*.beam", GenPath)]),
-    delete_files(State, GenPath, "*.beam"),
-
-    ok.
+            ok
+    end.
 
 format_error(Reason) ->
     provider_asn1_util:format_error(Reason).
@@ -107,5 +108,5 @@ generate_asn(State, Path, AsnFile) ->
             true -> [Encoding, verbose, {outdir, Path}];
             _ -> [Encoding, {outdir, Path}]
         end ++ proplists:get_value(compile_opts, Args),
-    verbose_out(State, "Beginning compile with opts: ~p", [CompileArgs]),
+    verbose_out(State, "Beginning compile with opts: ~p", [noobj | CompileArgs]),
     asn1ct:compile(AsnFile, CompileArgs).
