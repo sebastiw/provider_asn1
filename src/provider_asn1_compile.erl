@@ -72,7 +72,7 @@ process_app(State, AppPath) ->
     IncludePath = filename:join(AppPath, "include"),
     SrcPath = filename:join(AppPath, "src"),
 
-    case find_asn_files(ASNPath) of
+    case to_recompile(ASNPath, GenPath) of
         [] ->
             ok;
         Asns ->
@@ -110,3 +110,27 @@ generate_asn(State, Path, AsnFile) ->
         end ++ proplists:get_value(compile_opts, Args),
     verbose_out(State, "Beginning compile with opts: ~p", [noobj | CompileArgs]),
     asn1ct:compile(AsnFile, CompileArgs).
+
+to_recompile(ASNPath, GenPath) ->
+    case find_asn_files(ASNPath) of
+        [] ->
+            [];
+        ASNFileNames ->
+            case is_updated(ASNFileNames, ASNPath, GenPath) of
+                true -> ASNFileNames;
+                false -> []
+            end
+    end.
+
+is_updated([], _, _) ->
+    false;
+is_updated([ASNFileName | RestFiles], ASNPath, GenPath) ->
+    Source = filename:join(ASNPath, ASNFileName),
+    TargetFileName = filename:basename(ASNFileName, ".asn1") ++ ".erl",
+    Target = filename:join(GenPath, TargetFileName),
+    case filelib:last_modified(Source) > filelib:last_modified(Target) of
+        true ->
+            true;
+        false ->
+            is_updated(RestFiles, ASNPath, GenPath)
+    end.
