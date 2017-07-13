@@ -108,7 +108,7 @@ generate_asn(State, Path, AsnFile) ->
             true -> [Encoding, verbose, {outdir, Path}];
             _ -> [Encoding, {outdir, Path}]
         end ++ proplists:get_value(compile_opts, Args),
-    verbose_out(State, "Beginning compile with opts: ~p", CompileArgs),
+    verbose_out(State, "Beginning compile with opts: ~p", [CompileArgs]),
     asn1ct:compile(AsnFile, CompileArgs).
 
 to_recompile(ASNPath, GenPath) ->
