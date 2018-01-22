@@ -10,14 +10,14 @@ The plugin can be accessed via hex.pm:
 ```
 {plugins, [
     rebar3_hex,
-    { provider_asn1, "0.2.0"}
+    { provider_asn1, "0.2.3"}
 ]}.
 ```
 
 You can also pull the plugin directly from git:
 ```
 {plugins, [
-    { provider_asn1, ".*", {git, "git@github.com:knusbaum/provider_asn1.git", {tag, "0.2.0"}}}
+    { provider_asn1, ".*", {git, "git@github.com:knusbaum/provider_asn1.git", {tag, "0.2.3"}}}
 ]}.
 ```
 
@@ -50,7 +50,7 @@ Then if you run `rebar3 asn compile`, your asn.1 files will be compiled:
 $ rebar3 asn compile
 ===> Fetching provider_asn1 ({git,
                                      "git@github.com:knusbaum/provider_asn1.git",
-                                     {tag,"0.2.0"}})
+                                     {tag,"0.2.3"}})
 ===> Compiling provider_asn1
 ===> Generating ASN.1 files.
 $ tree
