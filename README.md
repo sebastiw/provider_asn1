@@ -9,7 +9,6 @@ Use
 The plugin can be accessed via hex.pm:
 ```
 {plugins, [
-    rebar3_hex,
     { provider_asn1, "0.2.3"}
 ]}.
 ```
