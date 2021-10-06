@@ -3,17 +3,6 @@
 
 -export([init/1, do/1, format_error/1]).
 
--import(provider_asn1_util,
-        [verbose_out/3,
-         move_files/4,
-         move_file/4,
-         delete_files/3,
-         delete_file/3,
-         resolve_args/2,
-         get_args/1,
-         get_arg/2,
-         set_arg/3]).
-
 -define(PROVIDER, 'compile').
 -define(DEPS, [{default, app_discovery}]).
 -define(DEFAULTS, [{verbose, false}, {encoding, ber}, {compile_opts, []}]).
@@ -40,14 +29,14 @@ init(State) ->
     {ok, rebar_state:add_provider(State, Provider)}.
 
 resolve_special_args(PreState) ->
-    NewState = resolve_args(PreState, ?DEFAULTS),
-    CompileOpts = get_arg(NewState, compile_opts),
+    NewState = provider_asn1_util:resolve_args(PreState, ?DEFAULTS),
+    CompileOpts = provider_asn1_util:get_arg(NewState, compile_opts),
     if
         is_binary(CompileOpts) ->
             NewCompileOpts = lists:map(fun(X) ->
                                                binary_to_atom(X, utf8) end,
                                        re:split(CompileOpts, ",")),
-            set_arg(NewState, compile_opts, NewCompileOpts);
+            provider_asn1_util:set_arg(NewState, compile_opts, NewCompileOpts);
         true -> NewState
     end.
 
@@ -103,7 +92,7 @@ generate_asn(State, Path, AsnFile) ->
     Verbose = proplists:get_value(verbose, Args),
     CompileArgs = [verbose || Verbose] ++ [noobj, Encoding, {outdir, Path}]
         ++ proplists:get_value(compile_opts, Args),
-    verbose_out(State, "Beginning compile with opts: ~p", [CompileArgs]),
+    provider_asn1_util:verbose_out(State, "Beginning compile with opts: ~p", [CompileArgs]),
     case asn1ct:compile(AsnFile, CompileArgs) of
         {error, E} ->
             provider_asn1_util:verbose_out(State, "Error ~p compiling ASN1 ~p~n", [E, AsnFile]);
