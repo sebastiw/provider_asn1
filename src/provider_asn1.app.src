@@ -1,6 +1,6 @@
 {application, 'provider_asn1',
  [{description, "Compile ASN.1 with Rebar3"},
-  {vsn, "0.2.3"},
+  {vsn, "0.3.0"},
   {registered, []},
   {applications,
    [kernel,
