@@ -51,7 +51,7 @@ do_clean(State, AppPath) ->
     Asns = filelib:wildcard("**/*.{asn1,asn}", AsnPath),
     lists:foreach(
         fun(AsnFile) ->
-            Base = provider_asn1_util:asn_basename(AsnFile, ".asn1"),
+            Base = provider_asn1_util:asn_basename(AsnFile),
             provider_asn1_util:delete_file(State, SrcPath, Base ++ ".erl"),
             provider_asn1_util:delete_file(State, IncludePath, Base ++ ".hrl")
         end, Asns),
