@@ -74,7 +74,7 @@ process_app(State, AppPath) ->
 move_asns(State, GenPath, SrcPath, IncludePath, Asns) ->
     lists:foreach(
       fun(AsnFile) ->
-              Base = asn_basename(AsnFile),
+              Base = provider_asn1_util:asn_basename(AsnFile),
               provider_asn1_util:move_file(State, GenPath, Base ++ ".erl", SrcPath),
               provider_asn1_util:delete_file(State, GenPath, Base ++ ".asn1db"),
               provider_asn1_util:move_file(State, GenPath, Base ++ ".hrl", IncludePath)
@@ -119,9 +119,6 @@ find_asn_files(Path) ->
 
 is_latest(ASNFileName, ASNPath, GenPath) ->
     Source = filename:join(ASNPath, ASNFileName),
-    TargetFileName = asn_basename(ASNFileName) ++ ".erl",
+    TargetFileName = provider_asn1_util:asn_basename(ASNFileName) ++ ".erl",
     Target = filename:join(GenPath, TargetFileName),
     filelib:last_modified(Source) > filelib:last_modified(Target).
-
-asn_basename(ASNFileName) ->
-    filename:basename(filename:basename(ASNFileName, ".asn1"), ".asn").
