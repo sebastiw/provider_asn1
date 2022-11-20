@@ -7,7 +7,9 @@
          resolve_args/2,
          get_args/1,
          get_arg/2,
-         set_arg/3]).
+         set_arg/3,
+         asn_basename/1
+        ]).
 
 verbose_out(State, FormatString, Args)->
     CommArgs = get_args(State),
