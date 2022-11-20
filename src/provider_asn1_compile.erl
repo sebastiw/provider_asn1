@@ -127,8 +127,7 @@ generate_asn(State, Path, AsnFile, AppPath) ->
     Encoding = proplists:get_value(encoding, Args),
     Verbose = proplists:get_value(verbose, Args),
     CompileOpts = fix_paths(AppPath, proplists:get_value(compile_opts, Args)),
-    CompileArgs = [verbose || Verbose] ++ [noobj, Encoding, {outdir, Path}]
-        ++ CompileOpts,
+    CompileArgs = CompileOpts ++ [verbose || Verbose] ++ [noobj, Encoding, {outdir, Path}],
     provider_asn1_util:verbose_out(State, "Beginning compile with opts: ~p", [CompileArgs]),
     case asn1ct:compile(AsnFile, CompileArgs) of
         {error, E} ->
@@ -186,9 +185,9 @@ asn_basename(ASNFileName) ->
     filename:basename(filename:basename(ASNFileName, ".asn1"), ".asn").
 
 apply_file_overrides(File, Args) ->
-    {[OverridesArgs], OtherArgs} = proplists:split(Args, [file_overrides]),
+    {[OverridesArgs], OtherArgs} = proplists:split(Args, [overrides]),
     case OverridesArgs of
-        [{file_overrides, Overrides}] -> match_file_overrides(File, Overrides);
+        [{overrides, Overrides}] -> match_file_overrides(File, Overrides);
         []                            -> []
     end ++ OtherArgs.
 
