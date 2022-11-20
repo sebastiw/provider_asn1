@@ -71,3 +71,6 @@ set_arg(State, Key, Val) ->
     Args = rebar_state:get(State, asn1_args, []),
     ArgsMap = maps:from_list(Args),
     rebar_state:set(State, asn1_args, maps:to_list(maps:put(Key, Val, ArgsMap))).
+
+asn_basename(ASNFileName) ->
+    filename:basename(filename:basename(filename:basename(ASNFileName, ".asn1"), ".asn"), ".set").
