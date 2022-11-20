@@ -143,9 +143,9 @@ is_latest(ASNFileName, ASNPath, GenPath) ->
     filelib:last_modified(Source) > filelib:last_modified(Target).
 
 apply_file_overrides(File, Args) ->
-    {[OverridesArgs], OtherArgs} = proplists:split(Args, [file_overrides]),
+    {[OverridesArgs], OtherArgs} = proplists:split(Args, [overrides]),
     case OverridesArgs of
-        [{file_overrides, Overrides}] -> match_file_overrides(File, Overrides);
+        [{overrides, Overrides}] -> match_file_overrides(File, Overrides);
         []                            -> []
     end ++ OtherArgs.
 
