@@ -108,7 +108,10 @@ The options are as follows:
    tuple-element is one of `wildcard` | `file` | `dir` and the second
    the filename in string format. Defaults to
    `[{wildcard, \"**/*.asn1\"}]`.
-
+ * `--overrides -O` An Erlang term consisting of a tuple-list of the
+   compile options that will override the options per file. The first
+   tuple-element is one of `file` | `re` and the second the filename
+   or match pattern in string format.
 
 Example:
 ```
@@ -119,7 +122,10 @@ As mentioned, these options can be put in your `rebar.config` file:
 ```
 {asn1_args, [{encoding, per},
              {verbose, true},
-             {compile_opts, [der, compact_bit_string]}]}.
+             {compile_opts, [der, compact_bit_string]},
+             {overrides, [{{file, "CAP_PHASE1.set.asn1"}, [{encoding, [ber]},
+                                                           {compile_opts, [{i, "asn1-lib/"}]}]},
+                          {{re, "/uper/"}, [{encoding, uper}]}]}]}.
 ```
 
 Options in `rebar.config` will be overridden by command-line options.
