@@ -7,7 +7,9 @@
          resolve_args/2,
          get_args/1,
          get_arg/2,
-         set_arg/3]).
+         set_arg/3,
+         asn_basename/1
+        ]).
 
 verbose_out(State, FormatString, Args)->
     CommArgs = get_args(State),
@@ -71,3 +73,6 @@ set_arg(State, Key, Val) ->
     Args = rebar_state:get(State, asn1_args, []),
     ArgsMap = maps:from_list(Args),
     rebar_state:set(State, asn1_args, maps:to_list(maps:put(Key, Val, ArgsMap))).
+
+asn_basename(ASNFileName) ->
+    filename:basename(filename:basename(filename:basename(ASNFileName, ".asn1"), ".asn"), ".set").

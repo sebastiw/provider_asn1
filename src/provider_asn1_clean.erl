@@ -48,10 +48,10 @@ do_clean(State, AppPath) ->
     IncludePath = filename:join(AppPath, "include"),
     SrcPath = filename:join(AppPath, "src"),
 
-    Asns = filelib:wildcard("**/*.asn1", AsnPath),
+    Asns = filelib:wildcard("**/*.{asn1,asn}", AsnPath),
     lists:foreach(
         fun(AsnFile) ->
-            Base = filename:basename(AsnFile, ".asn1"),
+            Base = provider_asn1_util:asn_basename(AsnFile),
             provider_asn1_util:delete_file(State, SrcPath, Base ++ ".erl"),
             provider_asn1_util:delete_file(State, IncludePath, Base ++ ".hrl")
         end, Asns),

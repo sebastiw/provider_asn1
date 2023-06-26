@@ -6,7 +6,7 @@
 -define(PROVIDER, 'compile').
 -define(DEPS, [{default, app_discovery}]).
 -define(DEFAULTS, [{verbose, false}, {encoding, ber}, {compile_opts, []},
-                   {compile_order, [{wildcard, "**/*.asn1"}]}]).
+                   {compile_order, [{wildcard, "**/*.{asn1,asn}"}]}]).
 
 %% ===================================================================
 %% Public API
@@ -110,7 +110,7 @@ process_app(State, AppPath) ->
 move_asns(State, GenPath, SrcPath, IncludePath, Asns) ->
     lists:foreach(
       fun(AsnFile) ->
-              Base = filename:basename(AsnFile, ".asn1"),
+              Base = provider_asn1_util:asn_basename(AsnFile),
               provider_asn1_util:move_file(State, GenPath, Base ++ ".erl", SrcPath),
               provider_asn1_util:delete_file(State, GenPath, Base ++ ".asn1db"),
               provider_asn1_util:move_file(State, GenPath, Base ++ ".hrl", IncludePath)
@@ -158,7 +158,7 @@ find_asn_files(State, BasePath) ->
                                [filename:join(BasePath, File)];
                            ({dir, Dir}) ->
                                D = filename:join(BasePath, Dir),
-                               [filename:join(D, F) || F <- filelib:wildcard("*.asn1", D)]
+                               [filename:join(D, F) || F <- filelib:wildcard("*.{asn1,asn}", D)]
                        end, Order),
     uniq(Fs).
 
@@ -177,7 +177,7 @@ uniq(Fs) ->
 
 is_latest(ASNFileName, ASNPath, GenPath) ->
     Source = filename:join(ASNPath, ASNFileName),
-    TargetFileName = filename:basename(ASNFileName, ".asn1") ++ ".erl",
+    TargetFileName = provider_asn1_util:asn_basename(ASNFileName) ++ ".erl",
     Target = filename:join(GenPath, TargetFileName),
     filelib:last_modified(Source) > filelib:last_modified(Target).
 

@@ -107,7 +107,7 @@ The options are as follows:
    the specific order to compile the ASN.1 files where the first
    tuple-element is one of `wildcard` | `file` | `dir` and the second
    the filename in string format. Defaults to
-   `[{wildcard, \"**/*.asn1\"}]`.
+   `[{wildcard, \"**/*.{asn1,asn}\"}]`.
  * `--overrides -O` An Erlang term consisting of a tuple-list of the
    compile options that will override the options per file. The first
    tuple-element is one of `file` | `re` and the second the filename
