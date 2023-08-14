@@ -97,7 +97,7 @@ process_app(State, AppPath) ->
     SrcPath = filename:join(AppPath, "src"),
     ensure_dir(State, SrcPath),
 
-    case to_recompile(State, ASNPath, GenPath) of
+    case to_recompile(State, ASNPath, SrcPath) of
         [] ->
             ok;
         Asns ->
@@ -144,9 +144,9 @@ ensure_dir(State, Path) ->
             provider_asn1_util:verbose_out(State, "Making ~p ~p~n", [Path, file:make_dir(Path)])
     end.
 
-to_recompile(State, ASNPath, GenPath) ->
+to_recompile(State, ASNPath, SrcPath) ->
     lists:filtermap(fun (File) ->
-                            is_latest(File, ASNPath, GenPath)
+                            is_latest(State, File, ASNPath, SrcPath)
                     end,
                     find_asn_files(State, ASNPath)).
 
@@ -175,10 +175,10 @@ uniq(Fs) ->
     Fs.
 -endif.
 
-is_latest(ASNFileName, ASNPath, GenPath) ->
+is_latest(State, ASNFileName, ASNPath, SrcPath) ->
     Source = filename:join(ASNPath, ASNFileName),
     TargetFileName = provider_asn1_util:asn_basename(ASNFileName) ++ ".erl",
-    Target = filename:join(GenPath, TargetFileName),
+    Target = filename:join(SrcPath, TargetFileName),
     filelib:last_modified(Source) > filelib:last_modified(Target).
 
 apply_file_overrides(File, Args) ->
