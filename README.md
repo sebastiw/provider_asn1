@@ -129,3 +129,6 @@ As mentioned, these options can be put in your `rebar.config` file:
 ```
 
 Options in `rebar.config` will be overridden by command-line options.
+
+Note: `provider_asn1` will recompile files if the generated source
+files are older than the asn1-files.
